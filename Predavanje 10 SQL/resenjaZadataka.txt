@@ -1,0 +1,135 @@
+CREATE DATABASE world_test;
+DROP DATABASE world_test;
+
+CREATE DATABASE vivify_world;
+USE vivify_world;
+CREATE TABLE countries_test(id integer, title varchar(255));
+DESCRIBE countries_test;
+DROP TABLE countries_test;
+
+USE vivify_world;
+CREATE TABLE countries(code CHAR(3),
+            name CHAR(52), 
+            continent VARCHAR(52), 
+            region VARCHAR(26), 
+            surface_area DECIMAL(10,2),
+            independence_year INTEGER(6),
+            population INTEGER(11), 
+            life_expectancy DECIMAL(3,1),
+            gnp DECIMAL(10,2),
+            gnp_old DECIMAL(10,2),
+            government_form VARCHAR(45)
+);
+DESCRIBE countries;
+ALTER TABLE countries ADD COLUMN head_of_state VARCHAR(60);, 
+ALTER TABLE countries ADD local_name VARCHAR(26);
+DESCRIBE countries;
+
+ALTER TABLE countries DROP COLUMN local_name;
+ALTER TABLE countries MODIFY COLUMN independence_year INTEGER (5);
+ALTER TABLE countries MODIFY COLUMN government_form VARCHAR (50);
+
+zadatak 2:
+
+CREATE DATABASE it_firma;
+USE it_firma;
+
+CREATE TABLE radnik(id integer, 
+    maticni_broj VARCHAR(6), 
+    ime VARCHAR(52),
+    prezime VARCHAR(52),
+    godina_rodjenja_radnika VARCHAR(10),
+    sef boolean
+);
+DESCRIBE radnik;
+ALTER TABLE radnik DROP COLUMN sef;
+ALTER TABLE radnik ADD (plata INTEGER, ime_projekta CHAR(50));
+
+ALTER TABLE radnik 
+    RENAME COLUMN ime TO ime_radnika,
+    RENAME COLUMN prezime TO prezime_radnika;
+ALTER TABLE radnik CHANGE godina_rodjenja_radnika godina_rodjenja DATE;
+
+CREATE TABLE projekat(id INT,
+    ime_projekta VARCHAR(50),
+    broj VARCHAR(10),
+    vreme_pocetka_projekta DATE,
+    vreme_zavrsetka_projekta DATE
+    );
+    
+ALTER TABLE projekat ADD probijen_rok BOOLEAN;
+ALTER TABLE projekat
+    RENAME COLUMN vreme_pocetka_projekta TO vreme_pocetka,
+    RENAME COLUMN vreme_zavrsetka_projekta TO vreme_zavrsetka;
+ALTER TABLE projekat RENAME COLUMN broj TO `integer`;
+
+DESCRIBE projekat;
+
+DROP TABLE radnik, projekat;
+DROP DATABASE it_firma;
+
+
+zadatak 3:
+
+CREATE DATABASE studentska_baza;
+USE studentska_baza;
+DESCRIBE dosije_studenta;
+CREATE TABLE dosije_studenta(id INT,
+        student_index VARCHAR(10),
+        ime VARCHAR(52),
+        prezime VARCHAR(52),
+        mesto_rodjenja VARCHAR(15),
+        datum_rodjenja DATE
+        );
+DESCRIBE dosije_studenta;
+ALTER TABLE dosije_studenta ADD datum_upisa DATE;
+ALTER TABLE dosije_studenta MODIFY COLUMN student_index INTEGER;
+
+ALTER TABLE dosije_studenta RENAME dosije;
+CREATE TABLE predmet(id INT,
+        naziv VARCHAR(25),
+        bodovi VARCHAR(10)
+        );
+CREATE TABLE rok( godina_roka VARCHAR(10), roka VARCHAR(10));
+ALTER TABLE rok ADD naziv VARCHAR(10);
+ALTER TABLE predmet MODIFY COLUMN bodovi INT;
+DESCRIBE dosije;
+DESCRIBE predmet;
+DESCRIBE rok;
+DROP TABLE dosije;
+DROP TABLE predmet, rok;
+DROP DATABASE studentska_baza;
+
+zadatak 4:
+
+CREATE DATABASE evidencija;
+
+USE evidencija;
+
+CREATE TABLE firma(firm_broj CHAR(3),
+        naziv_firme VARCHAR(100),
+        mesto VARCHAR(50),
+        adresa VARCHAR(50),
+        telefon VARCHAR(30)
+        );
+        
+CREATE TABLE faktura(sifra_fakture INTEGER(5),
+        sifra_firme INT(3),
+        datum DATE,
+        ulaz_izlaz BOOLEAN
+        );
+CREATE TABLE detalji_fakture(id INT(8),
+        faktura INT(5),
+        redni_broj INT(3),
+        proizvod INT(3),
+        kolicina DECIMAL(8,2),
+        dan_cena DECIMAL(8,2)
+        );
+ALTER TABLE faktura ADD primio VARCHAR(50);
+ALTER TABLE faktura DROP COLUMN primio;
+DESCRIBE detalji_fakture;
+ALTER TABLE detalji_fakture MODIFY COLUMN kolicina DECIMAL(6,2);
+ALTER TABLE detalji_fakture MODIFY COLUMN kolicina DECIMAL(8,2);
+ALTER TABLE detalji_fakture CHANGE COLUMN dan_cena cena DECIMAL(10,2);
+DROP TABLE firma, faktura, detalji_fakture;
+DROP DATABASE evidencija;

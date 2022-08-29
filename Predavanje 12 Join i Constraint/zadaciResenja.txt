@@ -1,0 +1,172 @@
+zadatak 1 iz teorije sa predavanja modelovanje baza
+CREATE TABLE users(
+    id int AUTO_INCREMENT,
+    email varchar(20) NOT NULL UNIQUE,
+    password varchar(50) NOT NULL,
+    is_admin BOOLEAN not null,
+    PRIMARY KEY (id)
+   );
+
+
+CREATE TABLE profiles(
+    id int AUTO_INCREMENT,
+    first_name varchar(50) NOT NULL,
+    last_name varchar(50) NOT NULL,
+    date_of_birth date NOT NULL,
+    country varchar(50),
+    profession varchar(50),
+    user_id int NOT NULL UNIQUE,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+    );
+
+CREATE TABLE posts(
+    id int AUTO_INCREMENT,
+    category varchar(20) NOT NULL,
+    title varchar(250) NOT NULL UNIQUE,
+    content varchar (1000) NOT NULL UNIQUE,
+    created_at date NOT NULL,
+    profile_id int NOT NULL ,
+    PRIMARY KEY (id),
+    FOREIGN KEY (profile_id) REFERENCES profiles(id)
+    );
+
+
+CREATE TABLE comments(
+    id int AUTO_INCREMENT,
+    content varchar(500) NOT NULL,
+    created_at date NOT NULL,
+    posts_id int NOT NULL ,
+    user_id int NOT NULL ,
+    PRIMARY KEY (id),
+    FOREIGN KEY (posts_id) REFERENCES posts(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+    );
+
+CREATE TABLE tags(
+    id int AUTO_INCREMENT,
+    title varchar(20) NOT NULL ,
+    PRIMARY KEY (id)
+    );
+
+CREATE TABLE tag_posts(
+    id int AUTO_INCREMENT,
+    posts_id int NOT NULL,
+    tags_id int NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (posts_id) REFERENCES posts(id),
+    FOREIGN KEY (tags_id) REFERENCES tags(id)
+    );
+
+
+
+zadatak 2
+
+CREATE TABLE users(
+    id int AUTO_INCREMENT,
+    email varchar(20) NOT NULL UNIQUE,
+    password varchar(50) NOT NULL,
+    PRIMARY KEY (id)
+   );
+
+
+CREATE TABLE profiles(
+    id int AUTO_INCREMENT,
+    first_name varchar(50),
+    last_name varchar(50),
+    date_of_birth DATE,
+    place_of_birth VARCHAR(50),
+    telephone VARCHAR(50) NOT NULL,
+    user_id int NOT NULL UNIQUE,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+    );
+CREATE TABLE adds(
+    id int AUTO_INCREMENT,
+    content VARCHAR(250),
+    category VARCHAR(50),
+    created_at DATE,
+    expiring_on DATE,
+    user_id int NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+    );
+DESCRIBE users;
+DESCRIBE profiles;
+DESCRIBE adds;
+    
+INSERT INTO users (email, password) VALUES ('mare@mare.com', '222'); 
+INSERT INTO users (email, password) VALUES ('perica@perica', '555');
+INSERT INTO profiles (first_name, last_name, date_of_birth, telephone, user_id) VALUES 
+                            ('Mare', 'Maric','1990-03-03','066-550-550',2),
+                            ('Perica', 'Peric','2000-03-03','066-660-660',1);
+INSERT INTO adds (content, category, created_at, expiring_on, user_id) VALUES 
+                        ("Prodajem polovnu wc solju.", 'Kupatilo','2022-04-04', '2022-04-14', 1), 
+                        ('Prodajem odlican lavabo','Kupatilo','2022-05-05', '2022-05-15', 1), 
+                        ('Prodajem fenomenalna vrata','Namestaj','2022-07-10', '2022-07-20', 2);
+UPDATE adds SET content = 'Odlicna kokos sa extra jajima' WHERE content = 'Prodajem odlican lavabo' 
+    AND user_id = 1;
+DELETE FROM adds WHERE content = 'Odlicna kokos sa extra jajima' AND user_id = 1;
+SELECT * FROM adds;
+SELECT * FROM adds WHERE user_id = 1;
+SELECT COUNT(id), category FROM adds GROUP BY category;
+SELECT * FROM adds WHERE category = 'Namestaj';
+SELECT * FROM adds WHERE content LIKE 'Odlicna%';
+SELECT * FROM adds WHERE created_at = '2022-07-10';
+SELECT * FROM adds WHERE expiring_on = '2022-07-20';
+SELECT * FROM adds WHERE user_id = 1;
+
+INSERT INTO users (email, password) VALUES ('zare@zare.com', '888');
+INSERT INTO profiles (first_name, last_name, date_of_birth, telephone, user_id) VALUES 
+                     ('Zare', 'Zaric','1980-03-03','069-880-880',3);
+INSERT INTO adds (content, category, created_at, expiring_on, user_id) VALUES 
+                 ('Prodajem EXTRA komodu Jul 16','Namestaj','2022-09-10', '2022-09-20', 3);
+UPDATE profiles SET place_of_birth = 'Becej' WHERE first_name = 'Zare';
+DELETE FROM profiles WHERE first_name = 'Zare';
+UPDATE adds SET category = 'Dnevna soba' WHERE user_id = 3;
+DELETE FROM adds WHERE user_id = 3;
+SELECT * FROM adds AS a LEFT JOIN users AS u ON u.id = a.user_id 
+                      LEFT JOIN profiles AS p ON u.id = p.user_id 
+                      WHERE u.id = 1;
+SELECT a.id, a.content, a.category,a.created_at, a.expiring_on, a.user_id, u.email, u.password, p.first_name, p.last_name      FROM adds AS a INNER JOIN users AS u ON u.id = a.user_id 
+                      INNER JOIN profiles AS p ON u.id = p.user_id
+                      GROUP BY a.id;
+
+
+zadatak 3
+
+SELECT prezime FROM Employees; 
+SELECT DISTINCT prezime FROM Employees;
+SELECT * FROM Employees AS e LEFT JOIN Departments As d ON d.id = e.departmant_id 
+        WHERE d.id = 14;
+SELECT e.id, e.ime AS first_name, e.prezime, e.departmant_id, d.ime AS name, d.budzet FROM Employees AS e 
+        INNER JOIN Departments As d ON d.id = e.departmant_id 
+        WHERE e.departmant_id IN (37, 77);
+SELECT ime, prezime FROM Employees WHERE prezime LIKE 'S%';
+SELECT SUM(d.budzet) FROM Departments As d; 
+SELECT d.ime, COUNT(e.id) AS ukupno_zaposlenih FROM Departments AS d 
+        LEFT JOIN Employees AS e ON d.id = e.departmant_id
+        GROUP BY d.ime; 
+SELECT * FROM Employees AS e LEFT JOIN Departments As d ON d.id = e.departmant_id;
+SELECT e.ime, e.prezime, d.ime AS department_name, d.budzet FROM Employees AS e 
+        LEFT JOIN Departments As d ON d.id = e.departmant_id ;
+SELECT ime, budzet FROM Departments WHERE budzet > (SELECT AVG(budzet) FROM Departments);
+SELECT d.ime, COUNT(e.id) AS ukupno_zaposlenih FROM Departments AS d 
+        LEFT JOIN Employees AS e ON d.id = e.departmant_id
+        GROUP BY d.ime HAVING ukupno_zaposlenih > 2;
+SELECT e.ime, e.prezime, d.budzet FROM Departments AS d 
+        INNER JOIN Employees AS e ON d.id = e.departmant_id
+        WHERE d.budzet = (SELECT MIN(budzet) FROM Departments);
+INSERT INTO Departments (id, ime, budzet) VALUES (11, 'QA', 30000);
+INSERT INTO Employees (id, ime, prezime, departmant_id) VALUES (12, 'Mary', 'Moore', 11);
+UPDATE Departments SET budzet = budzet*0.9;
+UPDATE Employees AS e INNER JOIN Departments AS d ON d.id = e.departmant_id 
+        SET e.departmant_id = (SELECT id FROM Departments WHERE ime = 'IT') 
+        WHERE e.departmant_id = (SELECT id FROM Departments WHERE ime = 'Board');
+DELETE FROM Employees WHERE departmant_id = (SELECT id FROM Departments WHERE ime = 'IT');
+DELETE FROM Employees WHERE departmant_id = (SELECT id FROM Departments WHERE budzet >= 60000);
+DELETE FROM Employees;
+
+
+
+

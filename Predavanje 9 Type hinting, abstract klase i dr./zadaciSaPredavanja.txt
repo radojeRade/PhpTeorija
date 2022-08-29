@@ -1,0 +1,686 @@
+3. Zadatak 3:
+class Kompanija
+{
+   public $ime;
+   public $sektori = [];
+
+   public function __construct(string $ime)
+   {
+       $this->ime = $ime;
+   }
+
+   public function dodajSektor(Sektor $sektor)
+   {
+       $this->sektori[] = $sektor;
+   }
+}
+
+abstract class Sektor
+{
+   public $ime;
+   public $zaposleni = [];
+
+   public function __construct(string $ime)
+   {
+       $this->ime = $ime;
+   }
+}
+
+class Fabrika extends Sektor implements DefinisanjeStriktnogRadnogVremena
+{
+   public $radnoVreme = [];
+   public $proizvodi = [];
+
+   public function setRadnoVreme(int $od, int $do)
+   {
+       $this->radnoVreme = [
+           'od' => $od,
+           'do' => $do
+       ];
+   }
+}
+
+class ProdajnoMesto extends Sektor implements PravilaOblacenja, DefinisanjeStriktnogRadnogVremena
+{
+   public $praviloOblacenjaProdajnogMesta;
+   public $radnoVreme;
+   public $proizvodi = [];
+
+   public function setPraviloOblacenja(string $pravilo)
+   {
+       $this->praviloOblacenjaProdajnogMesta = $pravilo;
+   }
+
+   public function getPraviloOblacenja(): string
+   {
+       return $this->praviloOblacenjaProdajnogMesta;
+   }
+
+   public function setRadnoVreme(int $od, int $do)
+   {
+       $this->radnoVreme = $od . ' - '. $do;
+   }
+
+}
+
+class OdsekZaNabavke extends Sektor implements ZakazivanjeSastanaka
+{
+   public $sastanci = [];
+
+   public function zakazatiSastanak(string $datum, string $vreme, string $kontakt)
+   {
+       $this->sastanci[] = [
+           'datum' => $datum,
+           'vreme' => $vreme,
+           'kontakt' => $kontakt
+       ];
+   }
+}
+
+class OdsekZaMarketing extends Sektor implements PravilaOblacenja, ZakazivanjeSastanaka
+{
+   public $praviloOblacenja;
+   public $sastanci = [];
+
+   public function setPraviloOblacenja(string $pravilo)
+   {
+       $this->praviloOblacenja = $pravilo;
+   }
+
+   public function getPraviloOblacenja(): string
+   {
+       return $this->praviloOblacenja;
+   }
+
+   public function zakazatiSastanak(string $datum, string $vreme, string $kontakt)
+   {
+       $this->sastanci[] = "$datum $vreme $kontakt";
+   }
+}
+
+interface PravilaOblacenja
+{
+   public function setPraviloOblacenja(string $pravilo);
+   public function getPraviloOblacenja(): string;
+}
+
+interface ZakazivanjeSastanaka
+{
+   public function zakazatiSastanak(string $datum, string $vreme, string $kontakt);
+}
+
+interface DefinisanjeStriktnogRadnogVremena
+{
+   public function setRadnoVreme(int $od, int $do);
+}
+
+
+
+
+public function dodajFabrike($fabrike){
+        $this->sektori[] = $fabrike;
+    }
+
+    public function dodajProdajnaMesta($prodajnaMesta){
+        $this->sektori[] = $prodajnaMesta;
+    }
+    public function dodajOdsekZaNabavke($odsekNabavke){
+        $this->sektori[] = $odsekNabavke;
+    }
+    public function dodajOdsekZaMarketing($odsekMarketing){
+        $this->sektori[] = $odsekMarketing;
+    }
+8:46
+fabrika, prodajno mesto, odsek za marketing, odsek za nabavke su sve sektori. Nema potrebe praviti posebnu metodu za svaki sektor kako bi ga dodali u niz sektori
+
+
+Jovana Radakovic  9:36 PM
+3 i 4. Zadatak:
+public function dodajFabrike($fabrike){
+        $this->sektori[] = $fabrike;
+    }
+
+    public function dodajProdajnaMesta($prodajnaMesta){
+        $this->sektori[] = $prodajnaMesta;
+    }
+    public function dodajOdsekZaNabavke($odsekNabavke){
+        $this->sektori[] = $odsekNabavke;
+    }
+    public function dodajOdsekZaMarketing($odsekMarketing){
+        $this->sektori[] = $odsekMarketing;
+    }
+    
+
+
+
+5. Zadatak:
+class Soba {
+    private static $brojac = 1;
+    public $brojSobe;
+    public $brojKreveta;
+    public $cena;
+    public $zauzeta;
+    
+    public function __construct(int $brojKreveta, int $cena)
+    {
+        $this->brojSobe = self::$brojac;
+        $this->brojKreveta = $brojKreveta;
+        $this->cena = $cena;
+        $this->zauzeta = false;
+        self::$brojac++;
+    }
+}
+
+class Hotel {
+    private $sobe = [];
+    
+    public function dodajSobu(Soba $soba)
+    {
+        $this->sobe[] = $soba;
+        echo "Dodata je soba broj " . $soba->brojSobe . ", " . $soba->brojKreveta . "K, " . $soba->cena . ".<br>";
+    }
+    
+    private function zauzmiSobu(Soba $soba)
+    {
+        $soba->zauzeta = true;
+        echo "Zauzeta je soba broj " . $soba->brojSobe . ".<br>";
+
+        return $soba->brojSobe;
+    }
+    
+    private function sobeSaNajmanjomCenom($n)
+    {
+        $pronadjene = [];
+        // filtriranje slobodnih soba po broju kreveta, koristimo anonymous funkciju: function ($soba) ...
+        $sobe = array_filter($this->sobe, function($soba) use ($n) {
+            return $n <= $soba->brojKreveta && !$soba->zauzeta;
+        });
+        // ako ima slobodnih soba sa odgovarajucim brojem kreveta
+        if (count($sobe)) {
+            // izdvajamo cene soba u poseban niz
+            $ceneSoba = array_map(function ($soba) {
+                return $soba->cena;
+            }, $sobe);
+            // trazimo minimalnu cenu iz niza
+            $najjeftinija = min($ceneSoba);
+            // filtriranje pronadjenih soba, ostavljamo samo one koje imaju minimalnu cenu
+            $pronadjene = array_filter($sobe, function($soba) use ($najjeftinija) {
+                return $soba->cena === $najjeftinija;
+            });   
+        }
+
+        return $pronadjene;
+    }
+    
+    private function sobeSaNajmanjimBrojemKreveta($sobe)
+    {
+        $pronadjene = [];
+        $brojeviKreveta = array_map(function($soba) {
+            return $soba->brojKreveta;
+        }, $sobe);
+        $minBrojKreveta = min($brojeviKreveta);
+        $pronadjene = array_filter($sobe, function($soba) use ($minBrojKreveta) {
+            return $soba->brojKreveta === $minBrojKreveta;
+        });
+        
+        return $pronadjene;
+    }
+    
+    private function sobaSaNajmanjimBrojem($sobe)
+    {
+        $pronadjene = [];
+        $brojeviSoba = array_map(function($soba) {
+            return $soba->brojSobe;
+        }, $sobe);
+        $minBrojSobe = min($brojeviSoba);
+        $pronadjene = array_filter($sobe, function($soba) use ($minBrojSobe) {
+            return $soba->brojSobe === $minBrojSobe;
+        });
+        
+        return reset($pronadjene);
+    }
+    
+    public function pronadji(int $n): int
+    {
+        $pronadjene = $this->sobeSaNajmanjomCenom($n);
+        
+        // ako je poronadjena samo jedna soba
+        if (count($pronadjene) === 1) {
+            return $this->zauzmiSobu(reset($pronadjene)); // funkcija reset vraca prvi element niza, ne moze se koristiti $pronadjene[0] jer pri filtriranju ostaju originalni indeksi
+        } else if (count($pronadjene) > 1) { // ako je pronadjeno vise soba, pretrazujemo po najmanjem borju kreveta
+            $pronadjenePoBrojuKreveta = $this->sobeSaNajmanjimBrojemKreveta($pronadjene);
+            if (count($pronadjenePoBrojuKreveta) === 1) {
+                return $this->zauzmiSobu(reset($pronadjenePoBrojuKreveta));
+            } else { // ako ima vise najjeftinijih soba sa istim brojem kreveta, trazimo sobu sa najmanjim brojem sobe
+                $sobaSaNajmanjimBrojem = $this->sobaSaNajmanjimBrojem($pronadjenePoBrojuKreveta);
+                return $this->zauzmiSobu($sobaSaNajmanjimBrojem);
+            }
+        } else {
+            echo "Nema pronadjenih soba.<br>";
+            return -1;
+        }
+        
+    }
+    
+    public function zarada(int $n): int
+    {
+        $zarada = 0;
+        $brojSoba = 0;
+        foreach ($this->sobe as $soba) {
+            if ($n === 0) {
+                if ($soba->zauzeta) {
+                    $zarada += $soba->cena;
+                    $brojSoba++;
+                }
+            } else {
+                if ($soba->zauzeta && $soba->brojKreveta === $n) {
+                    $zarada += $soba->cena;
+                    $brojSoba++;
+                }
+            }
+        }
+        
+        if ($brojSoba === 0) {
+            echo "Nema zauzetih soba po kriterijumu.<br>";
+        } else {
+            if ($n === 0) {
+                echo "Zarada od svih zauzetih soba: " . $zarada . "<br>";
+            } else {
+                echo "Zarada od zauzetih soba sa " . $n . " kreveta: " . $zarada . "<br>";
+            }
+        }
+        
+        return $zarada;
+    }
+}
+
+$hotel = new Hotel();
+$hotel->dodajSobu(new Soba(2, 3000));
+$hotel->dodajSobu(new Soba(3, 4000));
+$hotel->dodajSobu(new Soba(3, 4000));
+$hotel->dodajSobu(new Soba(2, 3700));
+$hotel->dodajSobu(new Soba(4, 3000));
+$hotel->dodajSobu(new Soba(5, 3000));
+$hotel->dodajSobu(new Soba(3, 4500));
+
+$hotel->pronadji(3);
+$hotel->pronadji(3);
+$hotel->pronadji(3);
+$hotel->pronadji(3);
+$hotel->pronadji(2);
+$hotel->pronadji(6);
+
+$hotel->zarada(3);
+$hotel->zarada(0);
+
+6. Zadatak:
+abstract class Instrument {
+
+    protected static $brojac = 0;
+    protected $ime;
+    protected $tip;
+    protected $zice = false;
+    protected $dugmici = false;
+    protected $udaraljke = false;
+    protected $osnova;
+
+    const OSNOVA_METAL = "metal";
+    const OSNOVA_PLASTIKA = "plastika";
+    const OSNOVA_DRVO = "drvo";
+
+    public function __construct() 
+    {
+        self::$brojac++;
+    }
+
+    protected function dodatNoviInstrument()
+    {
+        // ispis koji koristimo nakon dodeljivanja imena novom instrumentu
+        echo "Dodat novi instrument " . $this->ime . ". Ukupan broj instrumenata: " . self::$brojac . "<br>";
+    }
+
+    public function ispisi()
+    {
+        echo "<h4>" . get_class($this) . ":</h4>";
+        $this->imeInstrumenta();
+        $this->tipInstrumenta();
+        $this->imaZice();
+        $this->imaDugmice();
+        $this->imaUdaraljke();
+        $this->osnovaOdMetala();
+        $this->osnovaOdPlastike();
+        $this->osnovaOdDrveta();
+    }
+
+    public function imeInstrumenta()
+    {
+        echo "Naziv: " . $this->ime . "<br>";
+    }
+    public function tipInstrumenta()
+    {
+        echo "Tip: " . $this->tip . "<br>";
+    }
+    public function sviraj()
+    {
+        echo "Instrument " . $this->ime . " svira.<br>";
+    }
+    public function nastimujSe()
+    {
+        echo "Instrument " . $this->ime . " je nastiman.<br>";
+    }
+    public function imaZice()
+    {
+        echo "Ima zice: ";
+        if ($this->zice) {
+            echo "da";
+        } else {
+            echo "ne";
+        }
+        echo "<br>";
+    }
+    public function imaDugmice()
+    {
+        echo "Ima dugmice: ";
+        if ($this->dugmici) {
+            echo "da";
+        } else {
+            echo "ne";
+        }
+        echo "<br>";
+    }
+    public function imaUdaraljke()
+    {
+        echo "Ima udaraljke: ";
+        if ($this->udaraljke) {
+            echo "da";
+        } else {
+            echo "ne";
+        }
+        echo "<br>";
+    }
+    public function osnovaOdMetala()
+    {
+        echo "Osnova od metala: ";
+        if ($this->osnova === self::OSNOVA_METAL) {
+            echo "da";
+        } else {
+            echo "ne";
+        }
+        echo "<br>";
+    }
+    public function osnovaOdPlastike()
+    {
+        echo "Osnova od plastike: ";
+        if ($this->osnova === self::OSNOVA_PLASTIKA) {
+            echo "da";
+        } else {
+            echo "ne";
+        }
+        echo "<br>";
+    }
+    public function osnovaOdDrveta()
+    {
+        echo "Osnova od drveta: ";
+        if ($this->osnova === self::OSNOVA_DRVO) {
+            echo "da";
+        } else {
+            echo "ne";
+        }
+        echo "<br>";
+    }
+}
+
+abstract class ZicaniInstrument extends Instrument {
+    public function __construct()
+    {
+        parent::__construct();
+        $this->zice = true;
+        $this->tip = "zicani instrument";
+    }
+}
+
+abstract class DuvackiInstrument extends Instrument {
+    public function __construct()
+    {
+        parent::__construct();
+        $this->dugmici = true;
+        $this->tip = "duvacki instrument";
+    }
+}
+
+abstract class UdarackiInstrument extends Instrument {
+    public function __construct()
+    {
+        parent::__construct();
+        $this->udaraljke = true;
+        $this->tip = "udaracki instrument";
+    }
+}
+
+class Violina extends ZicaniInstrument {
+    protected static $brojacViolina = 0; // brojaci za kreiranje imena instrumenata, posto su konstruktori bez argumenata
+    public function __construct()
+    {
+        parent::__construct();
+        self::$brojacViolina++;
+        $this->ime = get_class($this) . self::$brojacViolina;
+        $this->osnova = self::OSNOVA_DRVO; // koristimo konstante iz prve apstraktne klase Instrument
+        $this->dodatNoviInstrument();
+    }
+}
+
+class Viola extends ZicaniInstrument {
+    protected static $brojacViola = 0;
+    public function __construct()
+    {
+        parent::__construct();
+        self::$brojacViola++;
+        $this->ime = get_class($this) . self::$brojacViola;
+        $this->osnova = self::OSNOVA_DRVO;
+        $this->dodatNoviInstrument();
+    }
+}
+
+class Violoncelo extends ZicaniInstrument {
+    protected static $brojacVioloncela = 0;
+    public function __construct()
+    {
+        parent::__construct();
+        self::$brojacVioloncela++;
+        $this->ime = get_class($this) . self::$brojacVioloncela;
+        $this->osnova = self::OSNOVA_DRVO;
+        $this->dodatNoviInstrument();
+    }
+}
+
+class Harfa extends ZicaniInstrument {
+    protected static $brojacHarfa = 0;
+    public function __construct()
+    {
+        parent::__construct();
+        self::$brojacHarfa++;
+        $this->ime = get_class($this) . self::$brojacHarfa;
+        $this->osnova = self::OSNOVA_DRVO;
+        $this->dodatNoviInstrument();
+    }
+}
+
+class Truba extends DuvackiInstrument {
+    protected static $brojacTruba = 0;
+    public function __construct()
+    {
+        parent::__construct();
+        self::$brojacTruba++;
+        $this->ime = get_class($this) . self::$brojacTruba;
+        $this->osnova = self::OSNOVA_METAL;
+        $this->dodatNoviInstrument();
+    }
+}
+
+class Tuba extends DuvackiInstrument {
+    protected static $brojacTuba = 0;
+    public function __construct()
+    {
+        parent::__construct();
+        self::$brojacTuba++;
+        $this->ime = get_class($this) . self::$brojacTuba;
+        $this->osnova = self::OSNOVA_METAL;
+        $this->dodatNoviInstrument();
+    }
+}
+
+class Horna extends DuvackiInstrument {
+    protected static $brojacHorna = 0;
+    public function __construct()
+    {
+        parent::__construct();
+        self::$brojacHorna++;
+        $this->ime = get_class($this) . self::$brojacHorna;
+        $this->osnova = self::OSNOVA_METAL;
+        $this->dodatNoviInstrument();
+    }
+}
+
+class Flauta extends DuvackiInstrument {
+    protected static $brojacFlauta = 0;
+    public function __construct()
+    {
+        parent::__construct();
+        self::$brojacFlauta++;
+        $this->ime = get_class($this) . self::$brojacFlauta;
+        $this->osnova = self::OSNOVA_DRVO;
+        $this->dodatNoviInstrument();
+    }
+}
+
+class Kontrabas extends ZicaniInstrument {
+    protected static $brojacKontrabasa = 0;
+    public function __construct()
+    {
+        parent::__construct();
+        self::$brojacKontrabasa++;
+        $this->ime = get_class($this) . self::$brojacKontrabasa;
+        $this->osnova = self::OSNOVA_DRVO;
+        $this->dodatNoviInstrument();
+    }
+}
+
+class Bubanj extends UdarackiInstrument {
+    protected static $brojacBubnjeva = 0;
+    public function __construct()
+    {
+        parent::__construct();
+        self::$brojacBubnjeva++;
+        $this->ime = get_class($this) . self::$brojacBubnjeva;
+        $this->osnova = self::OSNOVA_PLASTIKA;
+        $this->dodatNoviInstrument();
+    }
+}
+
+class Ksilofon extends UdarackiInstrument {
+    protected static $brojacKsilofona = 0;
+    public function __construct()
+    {
+        parent::__construct();
+        self::$brojacKsilofona++;
+        $this->ime = get_class($this) . self::$brojacKsilofona;
+        $this->osnova = self::OSNOVA_PLASTIKA;
+        $this->dodatNoviInstrument();
+    }
+}
+
+class Saksofon extends DuvackiInstrument {
+    protected static $brojacSaksofona = 0;
+    public function __construct()
+    {
+        parent::__construct();
+        self::$brojacSaksofona++;
+        $this->ime = get_class($this) . self::$brojacSaksofona;
+        $this->osnova = self::OSNOVA_METAL;
+        $this->dodatNoviInstrument();
+    }
+}
+
+class Trombon extends DuvackiInstrument {
+    protected static $brojacTrombona = 0;
+    public function __construct()
+    {
+        parent::__construct();
+        self::$brojacTrombona++;
+        $this->ime = get_class($this) . self::$brojacTrombona;
+        $this->osnova = self::OSNOVA_METAL;
+        $this->dodatNoviInstrument();
+    }
+}
+
+class Timpani extends UdarackiInstrument {
+    protected static $brojacTimpana = 0;
+    public function __construct()
+    {
+        parent::__construct();
+        self::$brojacTimpana++;
+        $this->ime = get_class($this) . self::$brojacTimpana;
+        $this->osnova = self::OSNOVA_METAL;
+        $this->dodatNoviInstrument();
+    }
+}
+
+$orkestar = [
+    new Violina(), 
+    new Truba(), 
+    new Bubanj(), 
+    new Violina(),
+    new Violina(),
+    new Violina(),  
+    new Truba(), 
+    new Ksilofon(), 
+    new Ksilofon(),
+    new Trombon(),
+    new Flauta(),
+    new Viola(),
+    new Violoncelo(),
+    new Flauta(),
+    new Kontrabas,
+    new Harfa(),
+    new Flauta(),
+    new Saksofon(),
+    new Timpani(),
+    new Saksofon(),
+    new Tuba(),
+    new Timpani(),
+    new Horna()
+];
+
+function osobine(Instrument $instrument)
+{
+    $instrument->ispisi();
+}
+
+function osobineSvihInstrumenata($orkestar)
+{
+    echo "<h3>Osobine</h3>";
+    foreach ($orkestar as $instrument) {
+        osobine($instrument);
+    }
+}
+
+function nastimujSve($orkestar)
+{
+    echo "<h3>Stimanje</h3>";
+    foreach ($orkestar as $instrument) {
+        $instrument->nastimujSe();
+    }
+}
+
+function svirajSve($orkestar)
+{
+    echo "<h3>Sviranje</h3>";
+    foreach ($orkestar as $instrument) {
+        $instrument->sviraj();
+    }
+}
+
+osobineSvihInstrumenata($orkestar);
+nastimujSve($orkestar);
+svirajSve($orkestar);
+

@@ -1,0 +1,103 @@
+SELECT name FROM countries WHERE continent = 'Europe';
+SELECT name, life_expectancy FROM countries WHERE life_expectancy <= 50;
+SELECT name, population FROM countries ORDER BY population DESC LIMIT 5;
+SELECT name, government_form FROM countries WHERE NOT government_form = 'Republic';
+SELECT name, gnp FROM countries WHERE gnp < 0;
+SELECT name FROM countries WHERE continent IN ('North America','South America') AND 
+    independence_year BETWEEN 1850 AND 1950;
+SELECT name FROM countries WHERE population > 1000000 AND continent='Asia' AND surface_area < 30000 OR government_form = 'Islamic Emirate';
+SELECT SUM(population) AS total_population FROM countries;
+SELECT SUM(population) as total, name FROM countries WHERE continent IN ('North America','South America') AND code LIKE 'M%'
+    GROUP BY name ORDER BY total DESC LIMIT 3;
+SELECT name as ime_drzave, continent as kontinent FROM countries WHERE NOT
+    continent IN ('North America','South America','Australia','Oceania') AND name LIKE '%st%'; 
+SELECT AVG(life_expectancy), name as zivotni_vek FROM countries;
+SELECT name FROM countries WHERE life_expectancy < (SELECT AVG(life_expectancy) as zivotni_vek FROM countries)
+SELECT name FROM countries WHERE population < (SELECT population FROM countries WHERE name='Slovenia');
+SELECT name FROM countries WHERE surface_area < (SELECT surface_area FROM countries WHERE continent='Africa' ORDER BY surface_area ASC LIMIT 1);
+SELECT COUNT(name) AS broj FROM countries WHERE continent = 'Asia';
+SELECT name FROM countries WHERE continent = 'Europe' AND population > (SELECT AVG(population) FROM countries WHERE
+    continent = 'Asia');
+SELECT name FROM countries WHERE continent = 'Europe' AND independence_year IN (SELECT independence_year FROM countries WHERE continent = 'Africa');
+SELECT name FROM countries WHERE continent = 'Africa' AND independence_year IN (SELECT independence_year FROM countries WHERE name IN 
+    ('Czech Republic','Malta','Slovakia'));
+SELECT name FROM countries WHERE government_form IN ('Constitutional Monarchy', 'Constitutional Monarchy, Federation')
+    AND life_expectancy > (SELECT AVG(life_expectancy) AS prosek FROM countries 
+    WHERE government_form NOT IN ('Constitutional Monarchy', 'Constitutional Monarchy, Federation'));
+SELECT name FROM countries WHERE population > (SELECT SUM(population) AS zbir FROM countries WHERE continent = 'Europe')
+SELECT name FROM countries WHERE surface_area > ( SELECT SUM(surface_area) as povrs FROM countries
+        WHERE continent = 'Asia');  
+SELECT name FROM countries WHERE surface_area > ( SELECT SUM(surface_area) as povrs FROM countries
+        WHERE continent = 'Europe');  
+SELECT name FROM countries WHERE surface_area > ( SELECT SUM(surface_area) as povrs FROM countries
+        WHERE continent = 'Oceania');  
+SELECT name FROM countries WHERE surface_area > ( SELECT SUM(surface_area) as povrs FROM countries
+        WHERE continent = 'South America'); 
+SELECT name FROM countries WHERE surface_area > ( SELECT SUM(surface_area) as povrs FROM countries
+        WHERE continent = 'North America'); 
+SELECT name FROM countries WHERE surface_area > ( SELECT SUM(surface_area) as povrs FROM countries
+        WHERE continent = 'Africa'); 
+SELECT name FROM countries WHERE surface_area > ( SELECT SUM(surface_area) as povrs FROM countries
+        WHERE continent = 'Antarctica');  
+        
+INSERT, UPDATE, DELETE zadaci tacnije zadatak 2:
+
+DESCRIBE countries;
+SELECT * FROM countries where name = 'Republika Karavukovo';
+INSERT INTO countries (code, name, continent, region, surface_area, population, government_form) 
+        VALUES ('RKV', "Republika Karavukovo",'Europe', 'Southern Europe',1000, 259999, 'Monarchy');
+UPDATE countries SET surface_area = 2000, code = 'RKK', region = 'Eastern Europe' WHERE name = 'Republika Karavukovo';
+DELETE FROM countries WHERE code = 'RKK';
+
+zadatak 3
+
+Upiti u bazu zadatak 2
+
+SELECT DISTINCT pozicija FROM zaposleni;
+SELECT ime, prezime FROM zaposleni ORDER BY ime DESC;
+SELECT id, ime, prezime, plata FROM zaposleni ORDER BY plata ASC;
+SELECT SUM(plata) FROM zaposleni;
+SELECT CONCAT_WS(' ', ime, prezime) AS puno_ime FROM zaposleni;
+SELECT SUBSTRING(ime, 1, 3) AS prva_tri FROM zaposleni;
+SELECT MAX(plata) AS max_plata, MIN(plata) AS min_plata FROM zaposleni;
+SELECT AVG(plata) AS prosecna_plata, COUNT(id) AS uk_broj_zaposlenih FROM zaposleni;
+SELECT UPPER(ime) AS velika_slova FROM zaposleni;
+SELECT * FROM zaposleni LIMIT 10;
+SELECT ime, prezime, pozicija FROM zaposleni WHERE pozicija IN ('HR', 'Marketing');
+SELECT ime, prezime, plata FROM zaposleni WHERE plata BETWEEN 1280 AND 1600 ORDER BY plata DESC;
+SELECT ime, prezime, datum_zaposlenja FROM zaposleni WHERE pozicija = 'Programer' 
+        AND datum_zaposlenja < '2021-01-01' ORDER BY datum_zaposlenja ASC;
+SELECT ime, prezime FROM zaposleni WHERE ime IN ('Willy', 'Herta');
+SELECT ime, prezime FROM zaposleni WHERE ime LIKE '%a%';
+SELECT ime, prezime FROM zaposleni WHERE ime LIKE '%a';
+SELECT MAX(plata) FROM zaposleni WHERE plata < (SELECT MAX(plata) AS maks FROM zaposleni);
+SELECT pozicija, COUNT(id) AS broj_zaposlenih FROM zaposleni GROUP BY pozicija; 
+SELECT pozicija, COUNT(id) AS broj_zaposlenih FROM zaposleni GROUP BY pozicija HAVING broj_zaposlenih < 100;
+
+
+Zadatak 3
+
+SELECT Name FROM nobel WHERE year = 1971;
+SELECT Name FROM nobel WHERE year = 1972 AND Category = 'Literature';
+SELECT Year, Category FROM nobel WHERE Name = 'Dennis Gabor';
+SELECT Name FROM nobel WHERE Name LIKE 'Louis_%';
+SELECT Name, Category FROM nobel WHERE Category NOT IN ('Economics', 'Physiology');
+SELECT DISTINCT Category FROM nobel;
+
+INSERT INTO nobel VALUES (2021, 'physics', 'Syukuro Manabe', '03 December 1972', 'Tokyo', 'Japan', 'Tokyo', 'Princeton University, USA',
+                    'English', 'Nobel Prize', 
+                    'for the physical modelling of Earth’s climate, quantifying variability and reliably predicting global warming');
+                    
+UPDATE nobel SET Residence = 'nije dostupno' WHERE Residence IS NULL;
+SELECT Name, Residence FROM nobel WHERE Residence = 'nije dostupno';
+
+UPDATE nobel SET Name = 'Johan Henry' WHERE Name LIKE 'Je%';
+SELECT Name FROM nobel WHERE Name LIKE 'Johan_Henry%';
+
+DELETE FROM nobel WHERE Category = 'Literature' AND Year BETWEEN 1980 AND 1989;
+SELECT Name, Year, Category FROM nobel WHERE Category = 'Literature' AND Year BETWEEN 1980 AND 1989;
+
+DELETE FROM nobel;
+DESCRIBE nobel;
+DROP DATABASE nobelovci;
+
